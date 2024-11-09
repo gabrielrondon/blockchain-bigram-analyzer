@@ -4,6 +4,12 @@ import pandas as pd
 from nltk import bigrams
 from collections import Counter
 import nltk
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logging.info("Iniciando o processamento do modelo de bigramas.")
+
 
 nltk.download('punkt')
 

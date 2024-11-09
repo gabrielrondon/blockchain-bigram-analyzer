@@ -8,6 +8,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 INFURA_PROJECT_ID = os.getenv('INFURA_PROJECT_ID')
+INFURA_PROJECT_SECRET = os.getenv('INFURA_PROJECT_SECRET')
+
+if INFURA_PROJECT_SECRET:
+    infura_url = f'https://:{INFURA_PROJECT_SECRET}@mainnet.infura.io/v3/{INFURA_PROJECT_ID}'
+else:
+    infura_url = f'https://mainnet.infura.io/v3/{INFURA_PROJECT_ID}'
 
 def classify_transaction(tx_row, w3):
     to_address = tx_row['to']
@@ -19,13 +25,13 @@ def classify_transaction(tx_row, w3):
         return 'Contract Interaction'
 
 def preprocess_transactions(df):
-    w3 = Web3(Web3.HTTPProvider(f'https://mainnet.infura.io/v3/{INFURA_PROJECT_ID}'))
+    w3 = Web3(Web3.HTTPProvider(infura_url))
     df['tx_type'] = df.apply(lambda row: classify_transaction(row, w3), axis=1)
     df.sort_values('blockNumber', inplace=True)
     return df
 
 if __name__ == '__main__':
-    df = pd.read_csv('../data/transactions.csv')
+    df = pd.read_csv('data/transactions.csv')
     df_processed = preprocess_transactions(df)
-    df_processed.to_csv('../data/transactions_processed.csv', index=False)
+    df_processed.to_csv('data/transactions_processed.csv', index=False)
     print("Pré-processamento concluído e salvo em data/transactions_processed.csv")
